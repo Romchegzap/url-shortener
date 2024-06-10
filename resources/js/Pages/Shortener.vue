@@ -1,7 +1,7 @@
 <template>
-    <Head title="Dashboard" />
+    <Head title="Shortener" />
 
-    <AuthenticatedLayout>
+    <Layout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
@@ -34,11 +34,11 @@
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </Layout>
 </template>
 
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/Layout.vue';
 import {Head, router} from '@inertiajs/vue3';
 import {useForm} from '@inertiajs/vue3'
 

@@ -3,13 +3,19 @@
 namespace App\Services;
 
 use App\Exceptions\UniqueHashMaxTriesException;
+use App\Exceptions\UrlIsDangerousException;
 use App\Models\Url;
+use App\Repositories\UrlRepository;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Str;
 
 class UrlService
 {
+    public function __construct(private UrlRepository $urlRepository)
+    {
+    }
+
     public function getUniqueHash(): string
     {
         $try = 0;
@@ -81,5 +87,23 @@ class UrlService
     public static function getShortUrlPrefix(): ?string
     {
         return config('settings.short_url_prefix');
+    }
+
+    public function findOrCreate(string $originalUrl): ?Url
+    {
+        $existingUrl = $this->urlRepository->getByOriginalUrl($originalUrl);
+
+        if ($existingUrl) {
+            return $existingUrl;
+        }
+
+        if ($this->isUrlDangerous($originalUrl)) {
+            throw new UrlIsDangerousException();
+        }
+
+        $url = $this->urlRepository->createUrl($originalUrl,  $this->getUniqueHash());
+        $this->cacheUrl($url);
+
+        return $url;
     }
 }

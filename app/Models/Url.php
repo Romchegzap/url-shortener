@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $original_url
@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Url whereOriginalUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Url whereShortHash($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Url whereUpdatedAt($value)
+ * @property int $original_url_hash
+ * @method static \Illuminate\Database\Eloquent\Builder|Url whereOriginalUrlHash($value)
  * @mixin \Eloquent
  */
 class Url extends Model
@@ -28,7 +30,8 @@ class Url extends Model
     use HasFactory;
 
     protected $fillable = [
-      'original_url',
-      'short_hash'
+        'original_url',
+        'original_url_hash',
+        'short_hash'
     ];
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UrlIsDangerousException;
 use App\Http\Requests\StoreUrlRequest;
 use App\Models\Url;
 use App\Repositories\UrlRepository;
@@ -26,37 +27,20 @@ class UrlController extends Controller
 
     public function store(StoreUrlRequest $request, UrlService $service): \Inertia\Response
     {
-        $url = $request->get('originalUrl');
-        $existingUrl = $this->urlRepository->getByOriginalUrl($url);
+        try {
+            $url = $service->findOrCreate($request->get('originalUrl'));
 
-        if ($existingUrl) {
             return Inertia::render('Shortener', [
-                'shortUrl'    => url($service::getShortUrlRoute($existingUrl->short_hash)),
-                'originalUrl' => $existingUrl->original_url
+                'shortUrl'    => url($service::getShortUrlRoute($url->short_hash)),
+                'originalUrl' => $url->original_url
             ]);
-        }
-
-        if ($service->isUrlDangerous($url)) {
+        } catch (UrlIsDangerousException $exception) {
             return Inertia::render('Shortener')->with([
                 'errors' => [
                     'originalUrl' => 'URL is dangerous, please try another one'
                 ]
             ]);
         }
-
-        $hash = $service->getUniqueHash();
-
-        $url = Url::create([
-            'original_url' => $url,
-            'short_hash'   => $hash,
-        ]);
-
-        $service->cacheUrl($url);
-
-        return Inertia::render('Shortener', [
-            'shortUrl'    => url($service::getShortUrlRoute($url->short_hash)),
-            'originalUrl' => $url->original_url
-        ]);
     }
 
     public function show($hash, UrlService $service): \Illuminate\Foundation\Application|JsonResponse|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse

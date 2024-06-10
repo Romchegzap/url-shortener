@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('urls', function (Blueprint $table) {
             $table->id();
             $table->string('original_url', 1000);
+            $table->unsignedInteger('original_url_hash')->index();
             $table->string('short_hash', 6)->unique();
             $table->timestamps();
-
-            $table->index([DB::raw('original_url(255)')], 'index_original_url');
         });
     }
 
