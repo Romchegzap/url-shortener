@@ -46,18 +46,8 @@ class UrlController extends Controller
     public function show($hash, UrlService $service): \Illuminate\Foundation\Application|JsonResponse|\Illuminate\Routing\Redirector|\Illuminate\Contracts\Foundation\Application|RedirectResponse
     {
         try {
-            $cachedOriginalUrl = Cache::get($service->getCacheKey($hash));
-
-            if ($cachedOriginalUrl) {
-                return redirect($cachedOriginalUrl);
-            }
-
-            $url = Url::where('short_hash', $hash)->firstOrFail();
-            if ($url) {
-                $service->cacheUrl($url);
-            }
-
-            return redirect($url->original_url);
+            $url = $service->findOriginalUrlByShortHash($hash);
+            return redirect($url);
         } catch (Throwable $exception) {
             Log::error('UrlController@show', ['error' => $exception->getMessage(), 'hash' => $hash]);
             return response()->json(['status' => 'error', 'message' => 'Oops something wrong happened.']);

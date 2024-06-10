@@ -101,9 +101,23 @@ class UrlService
             throw new UrlIsDangerousException();
         }
 
-        $url = $this->urlRepository->createUrl($originalUrl,  $this->getUniqueHash());
+        $url = $this->urlRepository->createUrl($originalUrl, $this->getUniqueHash());
         $this->cacheUrl($url);
 
         return $url;
+    }
+
+    public function findOriginalUrlByShortHash(string $hash): string
+    {
+        $cachedOriginalUrl = Cache::get($this->getCacheKey($hash));
+
+        if ($cachedOriginalUrl) {
+            return $cachedOriginalUrl;
+        }
+
+        $url = Url::where('short_hash', $hash)->firstOrFail();
+        $this->cacheUrl($url);
+
+        return $url->original_url;
     }
 }

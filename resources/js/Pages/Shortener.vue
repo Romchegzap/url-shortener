@@ -29,7 +29,7 @@
                         </div>
                     </form>
                     <div v-if="shortUrl" class="text-center mt-4">
-                        <p class="text-sm text-gray-600">Short URL: <a :href="shortUrl" class="text-indigo-600 hover:text-indigo-900">{{ shortUrl }}</a></p>
+                        <p class="text-sm text-gray-600">Short URL: <a :href="shortUrl" class="text-indigo-600 hover:text-indigo-900" target="_blank">{{ shortUrl }}</a></p>
                     </div>
                 </div>
             </div>
